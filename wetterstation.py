@@ -9,11 +9,11 @@ import bmp180
 
 import time
 
-THINGSPEAK_KEY = 'BQ60SOY9H3O643OC'
+THINGSPEAK_KEY = 'P3WBYMYKA5R6AZLV'
 THINGSPEAK_URL = 'https://api.thingspeak.com/update'
 
 light_sensor = BH1750()
-humid_sensor = AM2302(23)
+humid_sensor = AM2302(4)
 thingspeak = Thingspeak(THINGSPEAK_KEY, THINGSPEAK_URL)
 display = DisplayNokia5110()
 
@@ -31,6 +31,7 @@ result = thingspeak.send_data(temperature2, humidity, pressure, light)
 print result
 
 date_time = time.strftime("%d-%m-%Y,%H:%M:%S")
+time_now = time.strftime("%d-%m    %H:%M")
 
 log = date_time + ","
 log = log + "{:.1f}C".format(temperature2) + ","
@@ -40,4 +41,4 @@ log = log + "{:.1f}lx".format(light) + ","
 
 print log
 
-display.display_weather_values(date_time, temperature2, humidity, pressure, light)
+display.display_weather_values(time_now, temperature2, humidity, pressure, light)

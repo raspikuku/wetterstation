@@ -42,10 +42,10 @@ class DisplayNokia5110:
         draw.rectangle((0, 0, LCD.LCDWIDTH, LCD.LCDHEIGHT), outline=255, fill=255)
 
         # Write some text.
-        draw.text((0, 12), date_time, font=self.font)
-        draw.text((0, 24), "{:.1f}C ".format(temperature) + "{:.1f}%".format(humidity), font=self.font)
-        draw.text((0, 36), "{:.2f}mBar".format(pressure), font=self.font)
-        draw.text((0, 48), "{:.1f}lx".format(light), font=self.font)
+        draw.text((0, 0), date_time, font=self.font)
+        draw.text((0, 12), "{:.1f} C  ".format(temperature) + "{:.1f} %".format(humidity), font=self.font)
+        draw.text((0, 24), "{:.2f} mBar".format(pressure), font=self.font)
+        draw.text((0, 36), "{:.1f} lx   =;)".format(light), font=self.font)
 
         # Display image.
         self.display.image(image)
