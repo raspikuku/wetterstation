@@ -19,6 +19,8 @@ class DisplayNokia5110:
         # Hardware SPI usage:
         self.display = LCD.PCD8544(DC, RST, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE, max_speed_hz=4000000))
 
+
+    def display_weather_values(self, date_time, temperature, humidity, pressure, light):
         # Initialize library.
         self.display.begin(contrast=60)
 
@@ -27,9 +29,8 @@ class DisplayNokia5110:
         self.display.display()
 
         # Load default font.
-        self.font = ImageFont.load_default()
+        font = ImageFont.load_default()
 
-    def display_weather_values(self, date_time, temperature, humidity, pressure, light):
         # Create blank image for drawing.
         # Make sure to create image with mode '1' for 1-bit color.
         image = Image.new('1', (LCD.LCDWIDTH, LCD.LCDHEIGHT))
@@ -38,10 +39,11 @@ class DisplayNokia5110:
         draw = ImageDraw.Draw(image)
 
         # Write some text.
-        draw.text((0, 12), date_time, font=self.font)
-        draw.text((0, 24), "{:.1f}C ".format(temperature) + "{:.1f}%".format(humidity), font=self.font)
-        draw.text((0, 36), "{:.2f}mBar".format(pressure), font=self.font)
-        draw.text((0, 48), "{:.1f}lx".format(light), font=self.font)
+        draw.text((0, 12), 'HEY =;)', font=font)
+        #draw.text((0, 12), date_time, font=self.font)
+        #draw.text((0, 24), "{:.1f}C ".format(temperature) + "{:.1f}%".format(humidity), font=self.font)
+        #draw.text((0, 36), "{:.2f}mBar".format(pressure), font=self.font)
+        #draw.text((0, 48), "{:.1f}lx".format(light), font=self.font)
 
         # Display image.
         self.display.image(image)
