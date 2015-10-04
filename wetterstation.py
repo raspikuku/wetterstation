@@ -1,56 +1,43 @@
-import urllib
-import urllib2
-import time
+#!/usr/bin/python
 
 from sensor_BH1750 import BH1750
 from sensor_AM2302 import AM2302
+from thingspeak import Thingspeak
+from display_Nokia_5110 import DisplayNokia5110
+
 import bmp180
 
-THINGSPEAKKEY = 'BQ60SOY9H3O643OC'
-THINGSPEAKURL = 'https://api.thingspeak.com/update'
+import time
 
-def sendData(url, key, temp, humid, pres, light):
-  """
-  Send event to internet site
-  """
-
-  values = {'key' : key, 'field1' : "{:.1f}".format(temp), 'field2' : "{:.1f}".format(humid), 'field3' : pres, 'field4' : "{:.1f}".format(light)}
-
-  postdata = urllib.urlencode(values)
-  req = urllib2.Request(url, postdata)
-
-  log = time.strftime("%d-%m-%Y,%H:%M:%S") + ","
-  log = log + "{:.1f}C".format(temp) + ","
-  log = log + "{:.1f}%".format(humid) + ","
-  log = log + "{:.2f}mBar".format(pres) + ","
-  log = log + "{:.1f}lx".format(light) + ","
-
-  try:
-    # Send data to Thingspeak
-    response = urllib2.urlopen(req, None, 5)
-    html_string = response.read()
-    response.close()
-    log = log + 'Update ' + html_string
-
-  except urllib2.HTTPError, e:
-    log = log + 'Server could not fulfill the request. Error code: ' + e.code
-  except urllib2.URLError, e:
-    log = log + 'Failed to reach server. Reason: ' + e.reason
-  except:
-    log = log + 'Unknown error'
-
-  print log
+THINGSPEAK_KEY = 'BQ60SOY9H3O643OC'
+THINGSPEAK_URL = 'https://api.thingspeak.com/update'
 
 light_sensor = BH1750()
 humid_sensor = AM2302(23)
+thingspeak = Thingspeak(THINGSPEAK_KEY, THINGSPEAK_URL)
+display = DisplayNokia5110()
 
 light = light_sensor.read()
 
 (temperature, humidity) = humid_sensor.read()
 
-if temperature > 35 or humidity > 100:
+if temperature > 40 or humidity > 110:
     (temperature, humidity) = humid_sensor.read()
 
 (temperature2, pressure) = bmp180.readBmp180(0x77)
 
-sendData(THINGSPEAKURL, THINGSPEAKKEY, temperature2, humidity, pressure, light)
+result = thingspeak.send_data(temperature2, humidity, pressure, light)
+
+print result
+
+date_time = time.strftime("%d-%m-%Y,%H:%M:%S")
+
+log = date_time + ","
+log = log + "{:.1f}C".format(temperature2) + ","
+log = log + "{:.1f}%".format(humidity) + ","
+log = log + "{:.2f}mBar".format(pressure) + ","
+log = log + "{:.1f}lx".format(light) + ","
+
+print log
+
+display.display_weather_values(date_time, temperature2, humidity, pressure, light)
