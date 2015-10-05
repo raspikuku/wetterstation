@@ -4,6 +4,7 @@ from sensor_BH1750 import BH1750
 from sensor_AM2302 import AM2302
 from thingspeak import Thingspeak
 from display_Nokia_5110 import DisplayNokia5110
+import RPi.GPIO as gpio
 
 import bmp180
 
@@ -41,4 +42,17 @@ log = log + "{:.1f}lx".format(light) + ","
 
 print log
 
-display.display_weather_values(time_now, temperature2, humidity, pressure, light)
+display.display_weather_values(date_time, temperature2, humidity, pressure, light)
+
+led_pin = 12
+
+gpio.setmode(gpio.BOARD)
+
+gpio.setup(led_pin, gpio.OUT)
+
+for i in range(0, 2):
+    gpio.output(led_pin, gpio.HIGH)
+    time.sleep(1)
+    gpio.output(led_pin, gpio.LOW)
+    time.sleep(1)
+
