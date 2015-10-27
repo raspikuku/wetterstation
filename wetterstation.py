@@ -10,7 +10,7 @@ import bmp180
 
 import time
 
-THINGSPEAK_KEY = 'P3WBYMYKA5R6AZLV'
+THINGSPEAK_KEY = 'DG1SL06Y2VK3LA45'
 THINGSPEAK_URL = 'https://api.thingspeak.com/update'
 
 light_sensor = BH1750()
@@ -22,8 +22,10 @@ light = light_sensor.read()
 
 (temperature, humidity) = humid_sensor.read()
 
+# So this here is the first (and maybe last) attempt of an error correction >>>
 if temperature > 40 or humidity > 110:
     (temperature, humidity) = humid_sensor.read()
+# <<< Error correction end
 
 (temperature2, pressure) = bmp180.readBmp180(0x77)
 
@@ -42,17 +44,32 @@ log = log + "{:.1f}lx".format(light) + ","
 
 print log
 
-display.display_weather_values(date_time, temperature2, humidity, pressure, light)
+display.display_weather_values(time_now, temperature2, humidity, pressure, light)
 
-led_pin = 12
+led_pin = 18
 
-gpio.setmode(gpio.BOARD)
+#gpio.setmode(gpio.BOARD)
 
 gpio.setup(led_pin, gpio.OUT)
 
-for i in range(0, 2):
-    gpio.output(led_pin, gpio.HIGH)
-    time.sleep(1)
+for i in range(0, 3):
     gpio.output(led_pin, gpio.LOW)
     time.sleep(1)
+    gpio.output(led_pin, gpio.HIGH)
+    time.sleep(0.5)
 
+temp = int(temperature2)
+print temp
+
+# Temperature alarm!
+if (temp > 30):
+    print "ALARM!!!"
+    gpio.setup(17,gpio.OUT)
+
+    for num in range(0,10):
+        gpio.output(17,0)
+        time.sleep(.3)
+        gpio.output(17,1)
+        time.sleep(.3)
+
+    gpio.output(17,0)
