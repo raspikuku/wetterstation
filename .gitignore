@@ -1,1 +1,4 @@
 *.py[cod]
+current_weather.json
+config.json
+
