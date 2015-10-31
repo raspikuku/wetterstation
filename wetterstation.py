@@ -5,18 +5,19 @@ from sensor_AM2302 import AM2302
 from thingspeak import Thingspeak
 from display_Nokia_5110 import DisplayNokia5110
 import RPi.GPIO as gpio
-
+import json
+from pprint import pprint
 import bmp180
 
 import time
 
-THINGSPEAK_KEY = 'DG1SL06Y2VK3LA45'
+THINGSPEAK_KEY = 'SHV4NDUM176MQCGR'
 THINGSPEAK_URL = 'https://api.thingspeak.com/update'
 
 light_sensor = BH1750()
 humid_sensor = AM2302(4)
 thingspeak = Thingspeak(THINGSPEAK_KEY, THINGSPEAK_URL)
-display = DisplayNokia5110()
+#display = DisplayNokia5110()
 
 light = light_sensor.read()
 
@@ -44,11 +45,28 @@ log = log + "{:.1f}lx".format(light) + ","
 
 print log
 
-display.display_weather_values(time_now, temperature2, humidity, pressure, light)
+json_string = '{"datetime":"' + date_time + '",'
+json_string = json_string + '"temp":"' + "{:.1f}".format(temperature2) + '",'
+json_string = json_string + '"humid":"' + "{:.1f}".format(humidity) + '",'
+json_string = json_string + '"press":"' + "{:.1f}".format(pressure) + '",'
+json_string = json_string + '"light":"' + "{:.1f}".format(light) + '"'
+json_string = json_string + '}'
+
+print json_string
+
+target = open('current_weather.json', 'w')
+target.truncate()
+target.write(json_string)
+target.close()
+
+jdata = json.loads(json_string)
+pprint(jdata)
+#display.display_weather_values(time_now, temperature2, humidity, pressure, light)
 
 led_pin = 18
 
 #gpio.setmode(gpio.BOARD)
+gpio.setmode(gpio.BCM)
 
 gpio.setup(led_pin, gpio.OUT)
 
@@ -73,3 +91,5 @@ if (temp > 30):
         time.sleep(.3)
 
     gpio.output(17,0)
+
+gpio.cleanup()
