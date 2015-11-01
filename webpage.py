@@ -1,14 +1,19 @@
 #! /usr/bin/env python
 
-import string,cgi,time
-from os import curdir, sep
+import cgi
+#import string,cgi,time
+#from os import curdir, sep
+from pprint import pprint
+from urlparse import urlparse, parse_qs
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import json
 
 class MyHandler(BaseHTTPRequestHandler):
+    def __init__(self, request, client_address, server):
+        self.read_config()
+        super.__init__(request, client_address, server)
 
     def do_GET(self):
-        self.read_config()
         #oConfig = open('config.json', 'r')
         #self.config = json.loads(oConfig.read())
         
@@ -43,6 +48,8 @@ class MyHandler(BaseHTTPRequestHandler):
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
             if ctype == 'multipart/form-data':
                 query=cgi.parse_multipart(self.rfile, pdict)
+
+            pprint(query)
             self.send_response(301)
             
             self.end_headers()
@@ -55,8 +62,13 @@ class MyHandler(BaseHTTPRequestHandler):
             pass
 
     def read_config(self):
-        oConfig = open('config.json', 'r')
-        self.config = json.loads(oConfig.read())
+        with open('config.json', 'r') as infile:
+            self.config = json.loads(infile.read())
+
+    def write_config(self):
+        with open('config.json', 'w') as outfile:
+            json.dump(self.config, outfile, sort_keys=True, indent=4, ensure_ascii=False)
+
 
 def main():
     try:

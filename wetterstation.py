@@ -11,13 +11,17 @@ import bmp180
 
 import time
 
-THINGSPEAK_KEY = 'SHV4NDUM176MQCGR'
-THINGSPEAK_URL = 'https://api.thingspeak.com/update'
+oConfig = open('config.json', 'r')
+config = json.loads(oConfig.read())
+
+# THINGSPEAK_KEY = 'SHV4NDUM176MQCGR'
+# THINGSPEAK_KEY = config['thingspeak_api_key']
+# THINGSPEAK_URL = 'https://api.thingspeak.com/update'
 
 light_sensor = BH1750()
 humid_sensor = AM2302(4)
-thingspeak = Thingspeak(THINGSPEAK_KEY, THINGSPEAK_URL)
-#display = DisplayNokia5110()
+thingspeak = Thingspeak(config['thingspeak_api_key'], 'https://api.thingspeak.com/update')
+# display = DisplayNokia5110()
 
 light = light_sensor.read()
 
@@ -30,9 +34,6 @@ if temperature > 40 or humidity > 110:
 
 (temperature2, pressure) = bmp180.readBmp180(0x77)
 
-result = thingspeak.send_data(temperature2, humidity, pressure, light)
-
-print result
 
 date_time = time.strftime("%d-%m-%Y,%H:%M:%S")
 time_now = time.strftime("%d-%m    %H:%M")
@@ -80,16 +81,22 @@ temp = int(temperature2)
 print temp
 
 # Temperature alarm!
-if (temp > 30):
+if temp > config['temp_alarm_value'] and config['temp_alarm_status'] == 1:
     print "ALARM!!!"
-    gpio.setup(17,gpio.OUT)
+    gpio.setup(17, gpio.OUT)
 
-    for num in range(0,10):
-        gpio.output(17,0)
+    for num in range(0, 10):
+        gpio.output(17, 0)
         time.sleep(.3)
-        gpio.output(17,1)
+        gpio.output(17, 1)
         time.sleep(.3)
 
-    gpio.output(17,0)
+    gpio.output(17, 0)
 
 gpio.cleanup()
+
+# Update Thingspeak
+
+result = thingspeak.send_data(temperature2, humidity, pressure, light)
+
+print result
