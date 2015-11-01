@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import string,cgi,time
 from os import curdir, sep
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -6,8 +8,9 @@ import json
 class MyHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
-        oConfig = open('config.json', 'r')
-        self.config = json.loads(oConfig.read())
+        self.read_config()
+        #oConfig = open('config.json', 'r')
+        #self.config = json.loads(oConfig.read())
         
         file = open('current_weather.json', 'r')
         oTemplate = open('webpage/template.html', 'r')
@@ -30,7 +33,9 @@ class MyHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(template)
         return
-     
+
+    def get_template(self):     
+        return
 
     def do_POST(self):
         global rootnode
@@ -48,6 +53,10 @@ class MyHandler(BaseHTTPRequestHandler):
             
         except :
             pass
+
+    def read_config(self):
+        oConfig = open('config.json', 'r')
+        self.config = json.loads(oConfig.read())
 
 def main():
     try:

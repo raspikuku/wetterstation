@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! /usr/bin/env python
 
 from sensor_BH1750 import BH1750
 from sensor_AM2302 import AM2302
