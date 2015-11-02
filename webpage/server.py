@@ -72,7 +72,7 @@ class MyHandler(BaseHTTPRequestHandler):
         template = template.replace('{{title}}', self.config['site_title'])
         template = template.replace('{{subtitle}}', self.config['site_subtitle'])
         template = template.replace('{{chk_alarm_status}}', alarm_status)
-        template = template.replace('{{temp_value}}', self.config['temp_alarm_value'])
+        template = template.replace('{{temp_value}}', str(self.config['temp_alarm_value']))
 
         return template
 
