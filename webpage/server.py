@@ -34,11 +34,11 @@ class MyHandler(BaseHTTPRequestHandler):
 
         if type(alarm_status) is list and alarm_status[0] == 'on':
             print 'alarm on'
-            self.config['alarm_status'] = 1
+            self.config['temp_alarm_status'] = 1
             self.write_config()
         else:
             print 'alarm off'
-            self.config['alarm_status'] = 0
+            self.config['temp_alarm_status'] = 0
             self.write_config()
 
         template = self.get_template()
@@ -57,6 +57,11 @@ class MyHandler(BaseHTTPRequestHandler):
         with open('template.html', 'r') as infile:
             template = infile.read()
 
+        if self.config['temp_alarm_status'] == 1:
+            alarm_status = 'checked'
+        else:
+            alarm_status = ''
+
         template = template.replace('{{datetime}}', weather['datetime'])
         template = template.replace('{{temp}}', weather['temp'])
         template = template.replace('{{humid}}', weather['humid'])
@@ -64,6 +69,7 @@ class MyHandler(BaseHTTPRequestHandler):
         template = template.replace('{{light}}', weather['light'])
         template = template.replace('{{title}}', self.config['site_title'])
         template = template.replace('{{subtitle}}', self.config['site_subtitle'])
+        template = template.replace('{{chk_alarm_status}}', alarm_status)
 
         return template
 
@@ -72,7 +78,7 @@ class MyHandler(BaseHTTPRequestHandler):
             self.config = json.loads(infile.read())
 
     def write_config(self):
-        with open('config1.json', 'w') as outfile:
+        with open('config.json', 'w') as outfile:
             json.dump(self.config, outfile, sort_keys=True, indent=4, ensure_ascii=False)
 
 
