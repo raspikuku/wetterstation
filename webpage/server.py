@@ -35,13 +35,16 @@ class MyHandler(BaseHTTPRequestHandler):
         if type(alarm_status) is list and alarm_status[0] == 'on':
             print 'alarm on'
             self.config['temp_alarm_status'] = 1
-            self.write_config()
         else:
             print 'alarm off'
             self.config['temp_alarm_status'] = 0
-            self.write_config()
 
-        self.config['temp_alarm_value'] = int(query.get('temp_value'))
+        temp_value = query.get('temp_value')
+
+        if type(temp_value) is list:
+            self.config['temp_alarm_value'] = int(temp_value[0])
+
+        self.write_config()
 
         template = self.get_template()
 
