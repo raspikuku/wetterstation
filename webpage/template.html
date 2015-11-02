@@ -1,47 +1,54 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-gb" lang="en-gb" dir="ltr">
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <meta name="generator" content="elkuku" />
-  <title>{{title}}</title>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="generator" content="elkuku"/>
+    <title>{{title}}</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+          integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ=="
+          crossorigin="anonymous">
 
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"
+          integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
+            integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ=="
+            crossorigin="anonymous"></script>
 </head>
 
 <body>
 
-<h1>{{title}}</h1>
+<div class="container">
 
-<h2>{{subtitle}}</h2>
+    <h1>{{title}}</h1>
 
-{{message}}
+    <h2>{{subtitle}}</h2>
 
-<p class="datetime">{{datetime}}</p>
+    {{message}}
 
-<ul>
-    <li>Temperature: {{temp}} C</li>
-    <li>Humidity: {{humid}} %</li>
-    <li>Pressure: {{press}} mBar</li>
-    <li>Light: {{light}} lx</li>
-</ul>
-<form method="post" enctype="multipart/form-data">
+    <p class="datetime">{{datetime}}</p>
 
-    <label>
-        <input type="checkbox" name="alarm_status" {{chk_alarm_status}}/>
-        Temperature alarm
-    </label>
-    <input name="temp_value" value="{{temp_value}}"/> C
-    <br/>
-    <input type="submit" value="send">
-</form>
+    <ul>
+        <li>Temperature: {{temp}} C</li>
+        <li>Humidity: {{humid}} %</li>
+        <li>Pressure: {{press}} mBar</li>
+        <li>Light: {{light}} lx</li>
+    </ul>
+    <form method="post" enctype="multipart/form-data">
 
+        <label>
+            <input type="checkbox" name="alarm_status" {{chk_alarm_status}}/>
+            Temperature alarm
+        </label>
+        <input name="temp_value" value="{{temp_value}}"/> C
+        <br/>
+        <input type="submit" value="send">
+    </form>
+</div>
 </body>
 </html>
