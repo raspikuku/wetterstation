@@ -1,20 +1,26 @@
 <html>
 <body>
+
 <h1>{{title}}</h1>
+
 <h2>{{subtitle}}</h2>
+
+{{message}}
+
 <p class="datetime">{{datetime}}</p>
+
 <ul>
-<li>Temperature: {{temp}} C</li>
-<li>Humidity: {{humid}} %</li>
-<li>Pressure: {{press}} mBar</li>
-<li>Light: {{light}} lx</li>
+    <li>Temperature: {{temp}} C</li>
+    <li>Humidity: {{humid}} %</li>
+    <li>Pressure: {{press}} mBar</li>
+    <li>Light: {{light}} lx</li>
 </ul>
-<form method="POST" enctype="multipart/form-data" xxxaction='http://127.0.0.1/'>
+<form method="POST">
 
-<input type="checkbox" name="alarm_status" checked="{{chk_alarm}}" />
+    <input type="checkbox" name="alarm_status" checked="{{chk_alarm}}"/>
 
-<br>
-<input type="submit" value="send">
+    <br>
+    <input type="submit" value="send">
 </form>
 
 </body>

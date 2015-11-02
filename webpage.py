@@ -1,38 +1,21 @@
 #! /usr/bin/env python
 
-import cgi, sys
-#import string,cgi,time
-#from os import curdir, sep
-from pprint import pprint
-from urlparse import urlparse, parse_qs
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import cgi
+import sys
 import json
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+
+from pprint import pprint
+
 
 class MyHandler(BaseHTTPRequestHandler):
-    def xxx__init__(self, request, client_address, server):
-        self.read_config()
-        super(MyHandler, self).__init__(request, client_address, server)
 
     def do_GET(self):
         self.read_config()
-        #oConfig = open('config.json', 'r')
-        #self.config = json.loads(oConfig.read())
-        
-        file = open('current_weather.json', 'r')
-        oTemplate = open('webpage/template.html', 'r')
-        template = oTemplate.read()
 
-        json_string = file.read()
-        
-        parsed_json = json.loads(json_string)
+        template = self.get_template()
 
-        template = template.replace('{{datetime}}', parsed_json['datetime']) 
-        template = template.replace('{{temp}}', parsed_json['temp']) 
-        template = template.replace('{{humid}}', parsed_json['humid']) 
-        template = template.replace('{{press}}', parsed_json['press']) 
-        template = template.replace('{{light}}', parsed_json['light']) 
-        template = template.replace('{{title}}', self.config['site_title']) 
-        template = template.replace('{{subtitle}}', self.config['site_subtitle']) 
+        template = template.replace('{{message}}', 'Changes have been saved.')
 
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
@@ -40,42 +23,52 @@ class MyHandler(BaseHTTPRequestHandler):
         self.wfile.write(template)
         return
 
-    def get_template(self):     
-        return
-
     def do_POST(self):
-        global rootnode
         try:
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
-            #if ctype == 'multipart/form-data':
-            query=cgi.parse_multipart(self.rfile, pdict)
-            #form = cgi.FieldStorage() 
-            #pprint(form)
-            #alarm_status = form.getfirst("alarm_status", 0)
-            #print'alarm', alarm_status
-            aaa = query.get('alarm_status')
-            #print aaa[0]
-            if type(aaa) is list :
-                print 'is al list'
-            
-            if type(aaa) is list and aaa[0] == 'on':
+            query = cgi.parse_multipart(self.rfile, pdict)
+            alarm_status = query.get('alarm_status')
+
+            if type(alarm_status) is list and alarm_status[0] == 'on':
                 print 'alarm on'
+                self.config['alarm_status'] = 1
+                self.write_config()
             else:
                 print 'alarm off'
-            
-            pprint(query)
-            self.send_response(301)
-            
+                self.config['alarm_status'] = 0
+                self.write_config()
+
+            # pprint(query)
+
+            template = self.get_template()
+
+            template = template.replace('{{message}}', 'Changes have been saved.')
+
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
             self.end_headers()
-            #upfilecontent = query.get('upfile')
-            #print "filecontent", upfilecontent[0]
-            self.wfile.write("<HTML>POST OK.<BR><BR>");
-            #self.wfile.write(upfilecontent[0]);
-            
+            self.wfile.write(template)
+
         except :
             e = sys.exc_info()[0]
-            print( "<p>Error: %s</p>" % e )
-            #pass
+            print("<p>Error: %s</p>" % e)
+
+    def get_template(self):
+        with open('current_weather.json', 'r') as infile:
+            weather = json.loads(infile.read())
+
+        with open('webpage/template.html', 'r') as infile:
+            template = infile.read()
+
+        template = template.replace('{{datetime}}', weather['datetime'])
+        template = template.replace('{{temp}}', weather['temp'])
+        template = template.replace('{{humid}}', weather['humid'])
+        template = template.replace('{{press}}', weather['press'])
+        template = template.replace('{{light}}', weather['light'])
+        template = template.replace('{{title}}', self.config['site_title'])
+        template = template.replace('{{subtitle}}', self.config['site_subtitle'])
+
+        return template
 
     def read_config(self):
         with open('config.json', 'r') as infile:
