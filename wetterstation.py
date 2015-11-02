@@ -14,10 +14,6 @@ import time
 oConfig = open('config.json', 'r')
 config = json.loads(oConfig.read())
 
-# THINGSPEAK_KEY = 'SHV4NDUM176MQCGR'
-# THINGSPEAK_KEY = config['thingspeak_api_key']
-# THINGSPEAK_URL = 'https://api.thingspeak.com/update'
-
 light_sensor = BH1750()
 humid_sensor = AM2302(4)
 thingspeak = Thingspeak(config['thingspeak_api_key'], 'https://api.thingspeak.com/update')
