@@ -41,6 +41,8 @@ class MyHandler(BaseHTTPRequestHandler):
             self.config['temp_alarm_status'] = 0
             self.write_config()
 
+        self.config['temp_alarm_value'] = int(query.get('alarm_value'))
+
         template = self.get_template()
 
         template = template.replace('{{message}}', '<p>Changes have been saved.</p>')

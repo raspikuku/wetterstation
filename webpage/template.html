@@ -17,9 +17,12 @@
 </ul>
 <form method="post" enctype="multipart/form-data">
 
-    <label><input type="checkbox" name="alarm_status" {{chk_alarm_status}}/>
- Temperature alarm
-    <br>
+    <label>
+        <input type="checkbox" name="alarm_status" {{chk_alarm_status}}/>
+        Temperature alarm
+    </label>
+    <input name="temp_value" value="{{temp_value}}"/> C
+    <br/>
     <input type="submit" value="send">
 </form>
 
