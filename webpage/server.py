@@ -15,7 +15,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
         template = self.get_template()
 
-        template = template.replace('{{message}}', 'Changes have been saved.')
+        template = template.replace('{{message}}', '')
 
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
@@ -24,6 +24,7 @@ class MyHandler(BaseHTTPRequestHandler):
         return
 
     def do_POST(self):
+        self.read_config()
         ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
         query = cgi.parse_multipart(self.rfile, pdict)
         alarm_status = query.get('alarm_status')
@@ -42,7 +43,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
         template = self.get_template()
 
-        template = template.replace('{{message}}', 'Changes have been saved.')
+        template = template.replace('{{message}}', '<p>Changes have been saved.</p>')
 
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
