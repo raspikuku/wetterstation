@@ -3,10 +3,14 @@
 import cgi
 import sys
 import json
+import os
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 from pprint import pprint
 
+WORKDIR=os.path.dirname(os.path.abspath(__file__))
+
+print WORKDIR
 
 class MyHandler(BaseHTTPRequestHandler):
 
@@ -56,10 +60,10 @@ class MyHandler(BaseHTTPRequestHandler):
         self.wfile.write(template)
 
     def get_template(self):
-        with open('../current_weather.json', 'r') as infile:
+        with open(WORKDIR + '/../current_weather.json', 'r') as infile:
             weather = json.loads(infile.read())
 
-        with open('template.html', 'r') as infile:
+        with open(WORKDIR + '/template.html', 'r') as infile:
             template = infile.read()
 
         if self.config['temp_alarm_status'] == 1:
@@ -80,11 +84,11 @@ class MyHandler(BaseHTTPRequestHandler):
         return template
 
     def read_config(self):
-        with open('../config.json', 'r') as infile:
+        with open(WORKDIR + '/../config.json', 'r') as infile:
             self.config = json.loads(infile.read())
 
     def write_config(self):
-        with open('../config.json', 'w') as outfile:
+        with open(WORKDIR + '/../config.json', 'w') as outfile:
             json.dump(self.config, outfile, sort_keys=True, indent=4, ensure_ascii=False)
 
 
