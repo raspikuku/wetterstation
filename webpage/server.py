@@ -24,37 +24,30 @@ class MyHandler(BaseHTTPRequestHandler):
         return
 
     def do_POST(self):
-        try:
-            ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
-            query = cgi.parse_multipart(self.rfile, pdict)
-            alarm_status = query.get('alarm_status')
+        ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+        query = cgi.parse_multipart(self.rfile, pdict)
+        alarm_status = query.get('alarm_status')
 
-            pprint(query)
-            pprint(alarm_status)
+        pprint(query)
+        pprint(alarm_status)
 
-            if type(alarm_status) is list and alarm_status[0] == 'on':
-                print 'alarm on'
-                self.config['alarm_status'] = 1
-                self.write_config()
-            else:
-                print 'alarm off'
-                self.config['alarm_status'] = 0
-                self.write_config()
+        if type(alarm_status) is list and alarm_status[0] == 'on':
+            print 'alarm on'
+            self.config['alarm_status'] = 1
+            self.write_config()
+        else:
+            print 'alarm off'
+            self.config['alarm_status'] = 0
+            self.write_config()
 
-            # pprint(query)
+        template = self.get_template()
 
-            template = self.get_template()
+        template = template.replace('{{message}}', 'Changes have been saved.')
 
-            template = template.replace('{{message}}', 'Changes have been saved.')
-
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(template)
-
-        except :
-            e = sys.exc_info()[0]
-            print("<p>Error: %s</p>" % e)
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(template)
 
     def get_template(self):
         with open('../current_weather.json', 'r') as infile:
