@@ -80,11 +80,11 @@ class MyHandler(BaseHTTPRequestHandler):
         return template
 
     def read_config(self):
-        with open('config.json', 'r') as infile:
+        with open('../config.json', 'r') as infile:
             self.config = json.loads(infile.read())
 
     def write_config(self):
-        with open('config.json', 'w') as outfile:
+        with open('../config.json', 'w') as outfile:
             json.dump(self.config, outfile, sort_keys=True, indent=4, ensure_ascii=False)
 
 
