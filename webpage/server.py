@@ -29,6 +29,9 @@ class MyHandler(BaseHTTPRequestHandler):
             query = cgi.parse_multipart(self.rfile, pdict)
             alarm_status = query.get('alarm_status')
 
+            pprint(query)
+            pprint(alarm_status)
+
             if type(alarm_status) is list and alarm_status[0] == 'on':
                 print 'alarm on'
                 self.config['alarm_status'] = 1
@@ -54,10 +57,10 @@ class MyHandler(BaseHTTPRequestHandler):
             print("<p>Error: %s</p>" % e)
 
     def get_template(self):
-        with open('current_weather.json', 'r') as infile:
+        with open('../current_weather.json', 'r') as infile:
             weather = json.loads(infile.read())
 
-        with open('webpage/template.html', 'r') as infile:
+        with open('template.html', 'r') as infile:
             template = infile.read()
 
         template = template.replace('{{datetime}}', weather['datetime'])
@@ -75,7 +78,7 @@ class MyHandler(BaseHTTPRequestHandler):
             self.config = json.loads(infile.read())
 
     def write_config(self):
-        with open('config.json', 'w') as outfile:
+        with open('config1.json', 'w') as outfile:
             json.dump(self.config, outfile, sort_keys=True, indent=4, ensure_ascii=False)
 
 
