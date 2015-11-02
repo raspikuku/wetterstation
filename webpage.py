@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import cgi
+import cgi, sys
 #import string,cgi,time
 #from os import curdir, sep
 from pprint import pprint
@@ -9,11 +9,12 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import json
 
 class MyHandler(BaseHTTPRequestHandler):
-    def __init__(self, request, client_address, server):
+    def xxx__init__(self, request, client_address, server):
         self.read_config()
-        super.__init__(request, client_address, server)
+        super(MyHandler, self).__init__(request, client_address, server)
 
     def do_GET(self):
+        self.read_config()
         #oConfig = open('config.json', 'r')
         #self.config = json.loads(oConfig.read())
         
@@ -46,20 +47,35 @@ class MyHandler(BaseHTTPRequestHandler):
         global rootnode
         try:
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
-            if ctype == 'multipart/form-data':
-                query=cgi.parse_multipart(self.rfile, pdict)
-
+            #if ctype == 'multipart/form-data':
+            query=cgi.parse_multipart(self.rfile, pdict)
+            #form = cgi.FieldStorage() 
+            #pprint(form)
+            #alarm_status = form.getfirst("alarm_status", 0)
+            #print'alarm', alarm_status
+            aaa = query.get('alarm_status')
+            #print aaa[0]
+            if type(aaa) is list :
+                print 'is al list'
+            
+            if type(aaa) is list and aaa[0] == 'on':
+                print 'alarm on'
+            else:
+                print 'alarm off'
+            
             pprint(query)
             self.send_response(301)
             
             self.end_headers()
-            upfilecontent = query.get('upfile')
-            print "filecontent", upfilecontent[0]
+            #upfilecontent = query.get('upfile')
+            #print "filecontent", upfilecontent[0]
             self.wfile.write("<HTML>POST OK.<BR><BR>");
-            self.wfile.write(upfilecontent[0]);
+            #self.wfile.write(upfilecontent[0]);
             
         except :
-            pass
+            e = sys.exc_info()[0]
+            print( "<p>Error: %s</p>" % e )
+            #pass
 
     def read_config(self):
         with open('config.json', 'r') as infile:
