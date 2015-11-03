@@ -14,8 +14,8 @@ import time
 
 
 class Wetterstation:
-    def __init__(self, key):
-        self.key = key
+    def __init__(self, pin_buzzer):
+        self.pin_buzzer = pin_buzzer
 
         self.temperature = 0
         self.temperature2 = 0
@@ -33,6 +33,8 @@ class Wetterstation:
         self.check_alarm()
         self.update_thingspeak()
 
+        gpio.cleanup()
+
     def read_sensors(self):
         light_sensor = BH1750()
         humid_sensor = AM2302(4)
@@ -49,8 +51,6 @@ class Wetterstation:
 
     def update_thingspeak(self):
         thingspeak = Thingspeak(self.config['thingspeak_api_key'], 'https://api.thingspeak.com/update')
-        # a
-        # Update Thingspeak
 
         result = thingspeak.send_data(self.temperature2, self.humidity, self.pressure, self.light)
 
@@ -59,12 +59,13 @@ class Wetterstation:
     def write_status(self):
         date_time = time.strftime("%d-%m-%Y,%H:%M:%S")
 
-        json_string = '{"datetime":"' + date_time + '",'
-        json_string = json_string + '"temp":"' + "{:.1f}".format(self.temperature2) + '",'
-        json_string = json_string + '"humid":"' + "{:.1f}".format(self.humidity) + '",'
-        json_string = json_string + '"press":"' + "{:.1f}".format(self.pressure) + '",'
-        json_string = json_string + '"light":"' + "{:.1f}".format(self.light) + '"'
-        json_string = json_string + '}'
+        json_string = '{' \
+                      + '"datetime":"' + date_time + '",' \
+                      + '"temp":"' + "{:.1f}".format(self.temperature2) + '",'\
+                      + '"humid":"' + "{:.1f}".format(self.humidity) + '",' \
+                      + '"press":"' + "{:.1f}".format(self.pressure) + '",' \
+                      + '"light":"' + "{:.1f}".format(self.light) + '"'\
+                      + '}'
 
         print json_string
 
@@ -80,6 +81,7 @@ class Wetterstation:
         time_now = time.strftime("%d-%m    %H:%M")
         display = DisplayNokia5110()
         display.display_weather_values(time_now, self.temperature2, self.humidity, self.pressure, self.light)
+
         led_pin = 18
 
         #gpio.setmode(gpio.BOARD)
@@ -94,24 +96,34 @@ class Wetterstation:
             time.sleep(0.5)
 
     def check_alarm(self):
-        gpio.setmode(gpio.BCM)
+        if self.config['temp_alarm_status'] != 1:
+            return
+
         temp = int(self.temperature2)
         print temp
 
         # Temperature alarm!
-        if temp > self.config['temp_alarm_value'] and self.config['temp_alarm_status'] == 1:
-            print "ALARM!!!"
-            gpio.setup(17, gpio.OUT)
+        if temp > self.config['temp_alarm_value_xx']:
+            print "ALARM XX !!!"
+            self.run_alarm(20, .1)
+        elif temp > self.config['temp_alarm_value_x']:
+            print "ALARM X !!!"
+            self.run_alarm(15, .2)
+        elif temp > self.config['temp_alarm_value']:
+            print "ALARM !!!"
+            self.run_alarm(10, .3)
 
-            for num in range(0, 10):
-                gpio.output(17, 0)
-                time.sleep(.3)
-                gpio.output(17, 1)
-                time.sleep(.3)
+    def run_alarm(self, repeats, pause):
+        gpio.setmode(gpio.BCM)
+        gpio.setup(self.pin_buzzer, gpio.OUT)
 
-            gpio.output(17, 0)
+        for num in range(0, repeats):
+            gpio.output(self.pin_buzzer, 0)
+            time.sleep(pause)
+            gpio.output(self.pin_buzzer, 1)
+            time.sleep(pause)
 
-        gpio.cleanup()
+        gpio.output(self.pin_buzzer, 0)
 
 
 wetterstation = Wetterstation('foo')
