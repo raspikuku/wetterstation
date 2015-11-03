@@ -48,6 +48,16 @@ class MyHandler(BaseHTTPRequestHandler):
         if type(temp_value) is list:
             self.config['temp_alarm_value'] = int(temp_value[0])
 
+        temp_value = query.get('temp_value_x')
+
+        if type(temp_value) is list:
+            self.config['temp_alarm_value_x'] = int(temp_value[0])
+
+        temp_value = query.get('temp_value_xx')
+
+        if type(temp_value) is list:
+            self.config['temp_alarm_value_xx'] = int(temp_value[0])
+
         self.write_config()
 
         template = self.get_template()
