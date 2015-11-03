@@ -1,0 +1,45 @@
+#!/bin/sh -e
+
+### BEGIN INIT INFO
+# Provides:          wetterserver
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Wetterserver initscript
+# Description:       This service is used to manage the wetterserver
+### END INIT INFO
+
+DAEMON="/home/pi/wetterstation/webpage/server.py"
+DAEMONUSER="root"
+DEAMON_NAME="server.py"
+DESC="Wetterserver service"
+
+PATH="/sbin:/bin:/usr/sbin:/usr/bin"
+
+. /lib/lsb/init-functions
+
+case "$1" in 
+    start)
+	echo "starting..."
+        log_daemon_msg "Starting system $DEAMON_NAME Daemon"
+        start-stop-daemon --background --name $DEAMON_NAME --start --user $DAEMONUSER --exec $DAEMON
+	echo "Starting wetterserver"
+        #$DAEMON & >> /home/pi/wetterstation/server.log
+        log_end_msg $?
+        ;;
+    stop)
+        echo "Stopping wetterserver"
+        killall server.py
+        ;;
+    status)
+        status_of_proc "$DEAMON_NAME" "$DAEMON" "system-wide $DEAMON_NAME" && exit 0 || exit $?
+        ;;
+    *)
+        echo "Usage: /etc/init.d/wetterserver start|stop|status"
+        exit 1
+        ;;
+esac
+
+exit 0
+
