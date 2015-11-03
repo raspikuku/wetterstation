@@ -94,6 +94,7 @@ class Wetterstation:
             time.sleep(0.5)
 
     def check_alarm(self):
+        gpio.setmode(gpio.BCM)
         temp = int(self.temperature2)
         print temp
 
