@@ -126,6 +126,6 @@ class Wetterstation:
         gpio.output(self.pin_buzzer, 0)
 
 
-wetterstation = Wetterstation('foo')
+wetterstation = Wetterstation(17)
 
 wetterstation.read_all()
