@@ -2,6 +2,8 @@
   "thingspeak_api_key": "",
   "site_title": "",
   "site_subtitle": "",
-  "temp_alarm_value": 30,
+  "temp_alarm_value": 29,
+  "temp_alarm_value_x": 30,
+  "temp_alarm_value_xx": 31,
   "temp_alarm_status": 1
 }
