@@ -11,6 +11,7 @@ import bmp180
 
 import json
 import time
+import os
 
 
 class Wetterstation:
@@ -25,6 +26,8 @@ class Wetterstation:
 
         with open('config.json', 'r') as infile:
             self.config = json.loads(infile.read())
+
+        os.environ['TZ'] = 'America/Guayaquil'
 
     def read_all(self):
         self.read_sensors()
