@@ -32,7 +32,7 @@ class Wetterstation:
     def read_all(self):
         self.read_sensors()
         self.write_status()
-        #self.update_display()
+        self.update_display()
         self.check_alarm()
         self.update_thingspeak()
 

@@ -3,7 +3,10 @@
 * Install `Raspbian Jessie` from https://www.raspberrypi.org/downloads/raspbian/
 * clone `git@github.com:raspikuku/wetterstation.git`
 * Enable I2C http://www.raspberrypi-spy.co.uk/2014/11/enabling-the-i2c-interface-on-the-raspberry-pi/
+* Enable SPI http://raspi.tv/how-to-enable-spi-on-the-raspberry-pi
 * `sudo apt-get install python-smbus i2c-tools`
+
+Note: SPI is used only for the Nokia 5110 display.
 
 #### Links
 
