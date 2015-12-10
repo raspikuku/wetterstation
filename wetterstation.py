@@ -106,13 +106,13 @@ class Wetterstation:
         print temp
 
         # Temperature alarm!
-        if temp > self.config['temp_alarm_value_xx']:
+        if temp >= self.config['temp_alarm_value_xx']:
             print "ALARM XX !!!"
             self.run_alarm(20, .1)
-        elif temp > self.config['temp_alarm_value_x']:
+        elif temp >= self.config['temp_alarm_value_x']:
             print "ALARM X !!!"
             self.run_alarm(15, .2)
-        elif temp > self.config['temp_alarm_value']:
+        elif temp >= self.config['temp_alarm_value']:
             print "ALARM !!!"
             self.run_alarm(10, .3)
 
