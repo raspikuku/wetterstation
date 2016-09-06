@@ -3,15 +3,18 @@
 from sensor_BH1750 import BH1750
 from sensor_AM2302 import AM2302
 from thingspeak import Thingspeak
-from display_Nokia_5110 import DisplayNokia5110
+#from display_Nokia_5110 import DisplayNokia5110
 import RPi.GPIO as gpio
 from pprint import pprint
+from subprocess import call
 import bmp180
 
+import picamera
 
 import json
 import time
 import os
+
 
 
 class Wetterstation:
@@ -23,8 +26,9 @@ class Wetterstation:
         self.humidity = 0
         self.pressure = 0
         self.light = 0
+        self.basePath = '/home/pi/repos/wetterstation'
 
-        with open('config.json', 'r') as infile:
+        with open(self.basePath + '/config.json', 'r') as infile:
             self.config = json.loads(infile.read())
 
         os.environ['TZ'] = 'America/Guayaquil'
@@ -32,11 +36,13 @@ class Wetterstation:
     def read_all(self):
         self.read_sensors()
         self.write_status()
-        self.update_display()
-        self.check_alarm()
+        #self.update_display()
+        #self.check_alarm()
         self.update_thingspeak()
 
-        gpio.cleanup()
+        self.take_foto()
+
+        #gpio.cleanup()
 
     def read_sensors(self):
         light_sensor = BH1750()
@@ -58,6 +64,24 @@ class Wetterstation:
         result = thingspeak.send_data(self.temperature2, self.humidity, self.pressure, self.light)
 
         print result
+
+    def take_foto(self):
+        camera = picamera.PiCamera()
+        camera.led = False
+        camera.resolution = (1024, 768)
+
+        date_time = time.strftime("%Y-%m-%d-%H:%M:%S")
+
+        camera.annotate_text = date_time \
+                      + ' ' + "{:.1f}".format(self.temperature2) + ' C' \
+                      + ' ' + "{:.1f}".format(self.humidity) + ' %' \
+                      + ' ' + "{:.1f}".format(self.pressure) + ' mBar' \
+                      + ' ' + "{:.1f}".format(self.light) + ' lx'
+
+        camera.capture('/home/pi/fotoz/' + date_time + '.jpg')
+
+        photofile = '/home/pi/repos/Dropbox-Uploader/dropbox_uploader.sh upload /home/pi/fotoz/' + date_time + '.jpg ' + date_time + '.jpg' 
+        call ([photofile], shell=True)
 
     def write_status(self):
         date_time = time.strftime("%d-%m-%Y,%H:%M:%S")

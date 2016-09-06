@@ -2,7 +2,7 @@ import smbus
 
 
 class BH1750 :
-    def __init__(self, bus = 0, address = 0x23):
+    def __init__(self, bus = 1, address = 0x23):
         self.bus = smbus.SMBus(bus)
         self.address = address
 
