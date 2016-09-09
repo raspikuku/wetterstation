@@ -6,7 +6,7 @@ from thingspeak import Thingspeak
 #from display_Nokia_5110 import DisplayNokia5110
 import RPi.GPIO as gpio
 from pprint import pprint
-from subprocess import call
+from subprocess import call, check_output
 import bmp180
 
 import picamera
@@ -15,7 +15,11 @@ import json
 import time
 import os
 
+from sh import curl
+import sys
+import re
 
+from simplegist import Simplegist
 
 class Wetterstation:
     def __init__(self, pin_buzzer):
@@ -36,13 +40,43 @@ class Wetterstation:
     def read_all(self):
         self.read_sensors()
         self.write_status()
+
         #self.update_display()
         #self.check_alarm()
+
         self.update_thingspeak()
 
         self.take_foto()
 
         #gpio.cleanup()
+
+    def update_gist(self, shareLink):
+
+        print 'hey' + shareLink
+
+        ghGist = Simplegist(username=self.config['gh_user'], api_token=self.config['gh_api_key'])
+
+        ghGist.profile().edit(name='fotoz_latest', content=shareLink)
+
+        content = ghGist.profile().content(name='fotoz')
+
+        ghGist.profile().edit(name='fotoz', content=content + "\n" + shareLink)
+
+    def getShareLink(self, file_name):
+        command = '/home/pi/repos/Dropbox-Uploader/dropbox_uploader.sh share fotoz/' + file_name
+
+        #print 'executing: ' + command
+        test = check_output([command], shell=True)
+
+        matches = re.search('Share link: (.+)', test)
+
+        if matches:
+            #print matches.group(1)
+            return matches.group(1)
+        else:
+            print 'error'
+
+        return ''
 
     def read_sensors(self):
         light_sensor = BH1750()
@@ -66,22 +100,50 @@ class Wetterstation:
         print result
 
     def take_foto(self):
+        #Check if there is "light" and the hour is "full"
+        if self.light == 0 or time.strftime("%M") != "00":
+            return
+
         camera = picamera.PiCamera()
         camera.led = False
         camera.resolution = (1024, 768)
+        camera.annotate_background = picamera.Color('green')
 
-        date_time = time.strftime("%Y-%m-%d-%H:%M:%S")
-
-        camera.annotate_text = date_time \
+        camera.annotate_text = time.strftime("%Y-%m-%d-%H:%M") \
                       + ' ' + "{:.1f}".format(self.temperature2) + ' C' \
                       + ' ' + "{:.1f}".format(self.humidity) + ' %' \
                       + ' ' + "{:.1f}".format(self.pressure) + ' mBar' \
                       + ' ' + "{:.1f}".format(self.light) + ' lx'
 
-        camera.capture('/home/pi/fotoz/' + date_time + '.jpg')
+        file_name = time.strftime("%Y-%m-%d-%H-%M") + '.jpg'
 
-        photofile = '/home/pi/repos/Dropbox-Uploader/dropbox_uploader.sh upload /home/pi/fotoz/' + date_time + '.jpg ' + date_time + '.jpg' 
-        call ([photofile], shell=True)
+        camera.capture('/home/pi/fotoz/' + file_name)
+
+        command = '/home/pi/repos/Dropbox-Uploader/dropbox_uploader.sh upload /home/pi/fotoz/' + file_name + ' fotoz/' + file_name
+
+        call ([command], shell=True)
+
+        shareLink = self.getShareLink(file_name)
+
+        self.update_gist(shareLink)
+
+    def upload_imgur(self, imagePath):
+        try:
+            resp = curl(
+                "https://api.imgur.com/3/image",
+                H="Authorization: Client-ID 0b1eeceb9d77e1",  # Get your client ID from imgur.com
+                X="POST",
+                F='image=@%s' % imagePath
+            )
+            objresp = json.loads(resp.stdout)
+
+            if objresp.get('success', False):
+                print objresp['data']['link']
+                return objresp['data']['link']
+            else:
+                print 'Error: ', objresp['data']['error']
+        except Exception as e:
+            print 'Error: ', e
 
     def write_status(self):
         date_time = time.strftime("%d-%m-%Y,%H:%M:%S")
