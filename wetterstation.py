@@ -44,9 +44,19 @@ class Wetterstation:
         #self.update_display()
         #self.check_alarm()
 
-        self.update_thingspeak()
+        try :
+            self.update_thingspeak()
+        except Exception as e :
+            print 'ERROR: Thingspeak update failed'
+            #pprint(e)
+            pass
 
-        self.take_foto()
+        try :
+            self.take_foto()
+        except Exception as e :
+            print 'ERROR: Foto upload failed'
+            #print e
+            pass
 
         #gpio.cleanup()
 
@@ -101,7 +111,7 @@ class Wetterstation:
 
     def take_foto(self):
         #Check if there is "light" and the hour is "full"
-        if self.light == 0 or time.strftime("%M") != "00":
+        if self.light < 5 or time.strftime("%M") != "00":
             return
 
         camera = picamera.PiCamera()
@@ -164,7 +174,7 @@ class Wetterstation:
         target.close()
 
         jdata = json.loads(json_string)
-        pprint(jdata)
+        #pprint(jdata)
 
     def update_display(self):
         time_now = time.strftime("%d-%m    %H:%M")
